@@ -19,9 +19,6 @@ func main() {
 	flag.BoolVar(&barSwitch, "p", false, "show progress bar")
 	flag.Parse()
 
-	fmt.Println(poolCapacity)
-	fmt.Println(barSwitch)
-
 	lenOfNames := len(collection)
 
 	var bar *uiprogress.Bar
