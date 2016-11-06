@@ -4,34 +4,39 @@ import (
 	"flag"
 	"fmt"
 	"math"
+	"math/rand"
+	"time"
 
 	"github.com/gosuri/uiprogress"
 )
 
 func main() {
 
-	collection := make([]int, 20)
-	var results = make([]float64, 0)
 	var poolCapacity int
+	var collectionLen int
 	var barSwitch bool
+	var results = make([]float64, 0)
 
 	flag.IntVar(&poolCapacity, "t", 1, "number of threads")
+	flag.IntVar(&collectionLen, "l", 10, "length of initial collection")
 	flag.BoolVar(&barSwitch, "p", false, "show progress bar")
 	flag.Parse()
 
-	lenOfNames := len(collection)
-
 	var bar *uiprogress.Bar
 	if barSwitch {
-		fmt.Println("Init bar")
-		bar = barInit(lenOfNames)
+		bar = barInit(collectionLen)
 	}
 
-	resultsChan := make(chan float64, lenOfNames)
+	randSource := time.Now().UnixNano()
+	r := rand.New(rand.NewSource(randSource))
+
+	collection := make([]int, collectionLen)
+
+	resultsChan := make(chan float64, collectionLen)
 	poolChan := make(chan bool, poolCapacity)
 
-	for i, item := range collection {
-		item = i
+	for _, item := range collection {
+		item = r.Int()
 		go doLongOperation(item, resultsChan, poolChan)
 		poolChan <- true
 		if barSwitch {
